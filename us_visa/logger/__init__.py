@@ -1,24 +1,24 @@
-#Logging in Python is a built-in way to record (log) messages from your code — useful for debugging, tracking errors, or understanding how your program runs over time.
 import logging
 import os
 from datetime import datetime
 from from_root import from_root
 
-# Create a timestamped log file name
+# Create logs directory dynamically
+LOG_DIR = os.path.join(from_root(), "logs")
+os.makedirs(LOG_DIR, exist_ok=True)
+
+# Create timestamped log file
 LOG_FILE = f"{datetime.now().strftime('%m_%d_%Y_%H_%M_%S')}.log"
+LOG_FILE_PATH = os.path.join(LOG_DIR, LOG_FILE)
 
-# Create the full path for the logs directory inside project root
-log_dir = os.path.join(from_root(), "logs")
-os.makedirs(log_dir, exist_ok=True)  # ✅ create logs folder inside project
+# Create UTF-8 safe file handler manually
+file_handler = logging.FileHandler(LOG_FILE_PATH, mode='a', encoding='utf-8')
 
-# Full log file path
-logs_path = os.path.join(log_dir, LOG_FILE)
-
-# Configure logging
+# Configure basic logging (no unsupported args)
 logging.basicConfig(
-    filename=logs_path,
+    level=logging.INFO,
     format="[ %(asctime)s ] %(name)s - %(levelname)s - %(message)s",
-    level=logging.DEBUG,
+    handlers=[file_handler, logging.StreamHandler()]  # both file + console
 )
 
-logging.info("Logger initialized successfully.")
+logging.info(f"Logging setup complete. Log file: {LOG_FILE_PATH}")
