@@ -1,4 +1,6 @@
+
 from us_visa.pipline.training_pipeline import TrainingPipeline
 
-pipeline = TrainingPipeline()
-pipeline.run_pipeline()
+if __name__ == "__main__":
+    pipeline = TrainingPipeline()
+    pipeline.run_pipeline()

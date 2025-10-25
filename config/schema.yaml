@@ -1,0 +1,33 @@
+columns:
+  case_id: object
+  continent: object
+  education_of_employee: object
+  has_job_experience: object
+  requires_job_training: object
+  no_of_employees: int
+  yr_of_estab: int
+  region_of_employment: object
+  prevailing_wage: float
+  unit_of_wage: object
+  full_time_position: object
+  case_status: object
+
+numerical_columns:
+  - no_of_employees
+  - yr_of_estab
+  - prevailing_wage
+
+categorical_columns:
+  - case_id
+  - continent
+  - education_of_employee
+  - has_job_experience
+  - requires_job_training
+  - region_of_employment
+  - unit_of_wage
+  - full_time_position
+  - case_status
+
+drop_columns:
+  - case_id
+  - yr_of_estab

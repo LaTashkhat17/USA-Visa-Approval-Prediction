@@ -33,3 +33,14 @@ DATA_INGESTION_DIR_NAME: str = "data_ingestion"
 DATA_INGESTION_FEATURE_STORE_DIR: str = "feature_store"
 DATA_INGESTION_INGESTED_DIR: str = "ingested"
 DATA_INGESTION_TRAIN_TEST_SPLIT_RATIO: float = 0.2
+
+# =======================================================
+# ✅ DATA VALIDATION CONSTANTS
+# =======================================================
+DATA_VALIDATION_DIR_NAME: str = "data_validation"  # Folder for validation outputs
+DATA_VALIDATION_DRIFT_REPORT_DIR: str = "drift_report"  # Subfolder for drift reports
+DATA_VALIDATION_DRIFT_REPORT_FILE_NAME: str = "data_drift_report.html"  # HTML report file
+DATA_VALIDATION_SCHEMA_FILE_NAME: str = "schema.yaml"  # Schema file
+DATA_VALIDATION_STATUS_FILE: str = "validation_status.txt"  # Optional file to log validation result
+
+
