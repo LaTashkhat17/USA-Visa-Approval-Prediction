@@ -73,3 +73,44 @@ class DataValidationArtifact:
     validation_status_file_path: str      # Path to file storing pass/fail result
     is_validated: bool                    # True if validation passed
     message: str                          # Status message
+
+
+# ---------------------------------------------------------------------
+# DATA TRANSFORMATION CONFIGURATION
+# ---------------------------------------------------------------------
+@dataclass
+class DataTransformationConfig:
+    """
+    Configuration for data transformation:
+    Handles transformed datasets and preprocessing object.
+    """
+    data_transformation_dir: str = os.path.join(training_pipeline_config.artifact_dir, DATA_TRANSFORMATION_DIR_NAME)
+
+    transformed_train_file_path: str = os.path.join(
+        data_transformation_dir,
+        DATA_TRANSFORMATION_TRANSFORMED_DATA_DIR,
+        DATA_TRANSFORMATION_TRAIN_FILE_NAME
+    )
+
+    transformed_test_file_path: str = os.path.join(
+        data_transformation_dir,
+        DATA_TRANSFORMATION_TRANSFORMED_DATA_DIR,
+        DATA_TRANSFORMATION_TEST_FILE_NAME
+    )
+
+    preprocessing_object_path: str = os.path.join(
+        data_transformation_dir,
+        DATA_TRANSFORMATION_PREPROCESSING_DIR,
+        DATA_TRANSFORMATION_PREPROCESSING_OBJECT_FILE_NAME
+    )
+
+
+@dataclass
+class ModelTrainerConfig:
+    model_trainer_dir: str = os.path.join(training_pipeline_config.artifact_dir, MODEL_TRAINER_DIR_NAME)
+    trained_model_file_path: str = os.path.join(model_trainer_dir, MODEL_TRAINER_TRAINED_MODEL_DIR, MODEL_FILE_NAME)
+    expected_accuracy: float = MODEL_TRAINER_EXPECTED_SCORE
+    model_config_file_path: str = MODEL_TRAINER_MODEL_CONFIG_FILE_PATH
+
+
+

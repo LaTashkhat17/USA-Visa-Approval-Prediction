@@ -1,0 +1,2 @@
+Validation Status: PASSED
+Message: Schema validation passed. Drift report generated successfully.

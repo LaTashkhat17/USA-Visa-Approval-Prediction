@@ -22,3 +22,35 @@ class DataValidationArtifact:
     validation_status_file_path: str
     is_validated: bool
     message: str
+
+
+# =======================================================
+# DATA TRANSFORMATION ARTIFACT
+# =======================================================
+@dataclass
+class DataTransformationArtifact:
+    """
+    Contains paths to transformed data and preprocessing object.
+    """
+    transformed_train_file_path: str
+    transformed_test_file_path: str
+    preprocessing_object_path: str
+    is_transformed: bool
+    message: str
+
+
+@dataclass
+class ClassificationMetricArtifact:
+    f1_score: float
+    accuracy_score: float
+    precision_score: float
+    recall_score: float
+
+
+@dataclass
+class ModelTrainerArtifact:
+    trained_model_file_path: str
+    training_metric_artifact: ClassificationMetricArtifact
+    is_trained: bool
+    message: str
+    
