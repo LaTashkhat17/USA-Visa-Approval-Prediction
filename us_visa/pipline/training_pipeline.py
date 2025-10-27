@@ -7,18 +7,25 @@ from us_visa.components.data_ingestion import DataIngestion
 from us_visa.components.data_validation import DataValidation
 from us_visa.components.data_transformation import DataTransformation
 from us_visa.components.model_trainer import ModelTrainer
+from us_visa.components.model_evaluation import ModelEvaluation
+from us_visa.components.model_pusher import ModelPusher
+
 # Entities
 from us_visa.entity.config_entity import (
     DataIngestionConfig,
     DataValidationConfig,       
     DataTransformationConfig,
-    ModelTrainerConfig
+    ModelTrainerConfig,
+    ModelEvaluationConfig,
+    ModelPusherConfig
 )
 from us_visa.entity.artifact_entity import (
     DataIngestionArtifact,
     DataValidationArtifact,
     DataTransformationArtifact,
-    ModelTrainerArtifact
+    ModelTrainerArtifact,
+    ModelEvaluationArtifact,
+    ModelPusherArtifact
 )
 
 
@@ -38,6 +45,8 @@ class TrainingPipeline:
             self.data_validation_config = DataValidationConfig()
             self.data_transformation_config = DataTransformationConfig()
             self.model_trainer_config = ModelTrainerConfig()
+            self.model_evaluation_config = ModelEvaluationConfig()
+            self.model_pusher_config = ModelPusherConfig()
 
         except Exception as e:
             raise USvisaException(e, sys)
@@ -127,42 +136,75 @@ class TrainingPipeline:
             except Exception as e:
                 raise USvisaException(e, sys)
 
+    # ----------------------------------------------------------------
+    # Step 5: Model Evaluation
+    # ----------------------------------------------------------------
+    def start_model_evaluation(self, model_trainer_artifact: ModelTrainerArtifact) -> ModelEvaluationArtifact:
+        try:
+            logging.info("Starting Model Evaluation process.")
+            model_evaluation = ModelEvaluation(
+                model_trainer_artifact=model_trainer_artifact,
+                model_evaluation_config=self.model_evaluation_config
+            )
+            return model_evaluation.initiate_model_evaluation()
+        except Exception as e:
+            raise USvisaException(e, sys)
+
+   # ----------------------------------------------------------------
+    # Step 6: Model Pusher (Google Drive)
+    # ----------------------------------------------------------------
+    def start_model_pusher(self, model_evaluation_artifact: ModelEvaluationArtifact) -> ModelPusherArtifact:
+        try:
+            logging.info("Starting Model Pusher process (Google Drive Upload).")
+            model_pusher = ModelPusher(
+                model_pusher_config=self.model_pusher_config,
+                model_evaluation_artifact=model_evaluation_artifact
+            )
+            return model_pusher.initiate_model_pusher()
+        except Exception as e:
+            raise USvisaException(e, sys)
+
 
 
     # ----------------------------------------------------------------
     # RUN THE COMPLETE PIPELINE
     # ----------------------------------------------------------------
     def run_pipeline(self):
-        """
-        Executes the ML pipeline up to data transformation stage.
-        """
         try:
             logging.info("Pipeline execution started.")
 
-            # STEP 1: DATA INGESTION
+            # Step 1: Data Ingestion
             data_ingestion_artifact = self.start_data_ingestion()
 
-            # STEP 2: DATA VALIDATION
+            # Step 2: Data Validation
             data_validation_artifact = self.start_data_validation(data_ingestion_artifact)
 
-            # STEP 3: DATA TRANSFORMATION
+            # Step 3: Data Transformation
             data_transformation_artifact = self.start_data_transformation(
                 data_ingestion_artifact=data_ingestion_artifact,
                 data_validation_artifact=data_validation_artifact
             )
-            # STEP 4: MODEL TRAINING
-            model_trainer_artifact = self.start_model_trainer(
-                data_transformation_artifact=data_transformation_artifact)
+
+            # Step 4: Model Training
+            model_trainer_artifact = self.start_model_trainer(data_transformation_artifact)
+
+            # Step 5: Model Evaluation
+            model_evaluation_artifact = self.start_model_evaluation(model_trainer_artifact)
+
+            # Step 6: Model Pusher (Google Drive Upload)
+            model_pusher_artifact = self.start_model_pusher(model_evaluation_artifact)
 
             logging.info("Pipeline execution completed successfully.")
-            logging.info(f"Data Ingestion Artifact: {data_ingestion_artifact}")
-            logging.info(f"Data Validation Artifact: {data_validation_artifact}")
-            logging.info(f"Data Transformation Artifact: {data_transformation_artifact}")
+            logging.info(f"Model uploaded to Google Drive: {model_pusher_artifact.pushed_model_google_drive_url}")
 
             print("\nPipeline Run Summary:")
             print(f"Data Ingestion Output: {data_ingestion_artifact}")
             print(f"Data Validation Output: {data_validation_artifact}")
             print(f"Data Transformation Output: {data_transformation_artifact}")
+            print(f"Model Trainer Output: {model_trainer_artifact}")
+            print(f"Model Evaluation Output: {model_evaluation_artifact}")
+            print(f"Model Pusher Output: {model_pusher_artifact}")
 
         except Exception as e:
             raise USvisaException(e, sys)
+        

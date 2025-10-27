@@ -54,3 +54,17 @@ class ModelTrainerArtifact:
     is_trained: bool
     message: str
     
+
+@dataclass
+class ModelEvaluationArtifact:
+    is_model_accepted: bool
+    improved_accuracy: float
+    best_model_path: str
+    trained_model_path: str
+    message: str
+
+    
+@dataclass
+class ModelPusherArtifact:
+    pushed_model_google_drive_url: str
+    message: str

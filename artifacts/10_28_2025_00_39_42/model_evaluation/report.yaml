@@ -1,0 +1,4 @@
+best_model_path: saved_models/best_model.pkl
+improved_accuracy: 0.0
+is_model_accepted: true
+trained_model_path: artifacts\10_28_2025_00_39_42\model_trainer\trained_model\model.pkl

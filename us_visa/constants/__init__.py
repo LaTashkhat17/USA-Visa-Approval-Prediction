@@ -69,3 +69,22 @@ MODEL_TRAINER_MODEL_CONFIG_FILE_PATH: str = os.path.join("config", "model.yaml")
 MODEL_EVALUATION_CHANGED_THRESHOLD_SCORE: float = 0.02
 MODEL_BUCKET_NAME = "usvisabucket25"
 MODEL_PUSHER_S3_KEY = "model-registry"
+
+# =======================================================
+# MODEL EVALUATION CONSTANTS
+# =======================================================
+MODEL_EVALUATION_DIR_NAME = "model_evaluation"
+MODEL_EVALUATION_REPORT_FILE_NAME = "report.yaml"
+MODEL_EVALUATION_IMPROVEMENT_THRESHOLD = 0.01  # 1% improvement required to accept new model
+
+
+# =======================================================
+# MODEL PUSHER CONSTANTS
+# =======================================================
+MODEL_PUSHER_DIR_NAME = "model_pusher"
+MODEL_PUSHER_SAVED_MODEL_DIR = "saved_models"
+MODEL_PUSHER_GOOGLE_DRIVE_FOLDER_NAME = "US_Visa_Models"  # Folder name in Google Drive
+
+GOOGLE_CLIENT_SECRET_FILE = "client_secrets.json"
+GOOGLE_CREDENTIALS_FILE = "credentials.json"
+GOOGLE_DRIVE_FOLDER_NAME = "us_visa_models"
