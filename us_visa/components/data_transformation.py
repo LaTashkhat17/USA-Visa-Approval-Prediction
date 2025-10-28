@@ -50,7 +50,7 @@ class DataTransformation:
         try:
             numeric_transformer = StandardScaler()
             oh_transformer = OneHotEncoder(handle_unknown="ignore")
-            ordinal_encoder = OrdinalEncoder()
+            ordinal_encoder = OrdinalEncoder(handle_unknown="use_encoded_value", unknown_value=-1)
             transform_pipe = Pipeline(steps=[('transformer', PowerTransformer(method='yeo-johnson'))])
 
             oh_columns = self._schema_config['oh_columns']
@@ -66,7 +66,8 @@ class DataTransformation:
                     ("StandardScaler", numeric_transformer, num_features)
                 ],
                 remainder='drop'
-            )
+)
+
 
             logging.info("Preprocessor object created successfully")
             return preprocessor

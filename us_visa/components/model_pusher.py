@@ -1,6 +1,6 @@
 import os, sys
-from pydrive2.auth import GoogleAuth
-from pydrive2.drive import GoogleDrive  # use pydrive2 (better maintained)
+from pydrive.auth import GoogleAuth
+from pydrive.drive import GoogleDrive
 from us_visa.logger import logging
 from us_visa.exception import USvisaException
 from us_visa.entity.config_entity import ModelPusherConfig
@@ -8,9 +8,8 @@ from us_visa.entity.artifact_entity import ModelEvaluationArtifact, ModelPusherA
 
 
 class ModelPusher:
-    """
-    Handles uploading the best trained model to Google Drive.
-    Creates folder automatically if it doesn’t exist and reuses existing credentials.
+    """ 
+    Class to handle pushing the trained model to Google Drive.
     """
 
     def __init__(self, model_pusher_config: ModelPusherConfig,
@@ -18,108 +17,71 @@ class ModelPusher:
         self.model_pusher_config = model_pusher_config
         self.model_evaluation_artifact = model_evaluation_artifact
 
-    # ------------------------------------------------------------------
-    # AUTHENTICATION HANDLER
-    # ------------------------------------------------------------------
-    def authenticate_drive(self) -> GoogleDrive:
+    def upload_to_drive(self, local_file_path: str, folder_name: str = "US_Visa_Models"):
+        """
+        Uploads the model to Google Drive and makes it publicly accessible.
+        """
         try:
             logging.info("Authenticating with Google Drive...")
-
-            # Check if client_secrets.json exists
-            client_secret_path = os.path.join(os.getcwd(), "client_secrets.json")
-            if not os.path.exists(client_secret_path):
-                raise FileNotFoundError(
-                    f"Missing Google OAuth client secrets file: {client_secret_path}\n"
-                    f"Please download it from Google Cloud Console and place it in your project root."
-                )
-
-            # Setup GoogleAuth
             gauth = GoogleAuth()
-            gauth.LoadClientConfigFile(client_secret_path)
+            gauth.LocalWebserverAuth()
+            drive = GoogleDrive(gauth)
 
-            # Try to load saved credentials
-            cred_path = os.path.join(os.getcwd(), "credentials.json")
-            if os.path.exists(cred_path):
-                gauth.LoadCredentialsFile(cred_path)
-                if gauth.access_token_expired:
-                    gauth.Refresh()
-                else:
-                    gauth.Authorize()
-            else:
-                # First-time login; will open a browser for OAuth
-                gauth.LocalWebserverAuth()
-                gauth.SaveCredentialsFile(cred_path)
-
-            logging.info("Google Drive authentication successful.")
-            return GoogleDrive(gauth)
-
-        except Exception as e:
-            raise USvisaException(e, sys)
-
-    # ------------------------------------------------------------------
-    # UPLOAD TO GOOGLE DRIVE
-    # ------------------------------------------------------------------
-    def upload_to_drive(self, local_file_path: str, folder_name: str = "ML_Models") -> str:
-        """
-        Uploads a given file to Google Drive inside the specified folder.
-        Creates folder automatically if not present.
-        Returns the public URL of the uploaded model.
-        """
-        try:
-            drive = self.authenticate_drive()
-
-            # Search or create folder
+            # Create or find target folder
             folder_list = drive.ListFile(
                 {'q': f"title='{folder_name}' and mimeType='application/vnd.google-apps.folder' and trashed=false"}
             ).GetList()
 
             if folder_list:
                 folder_id = folder_list[0]['id']
-                logging.info(f"Found existing folder in Google Drive: {folder_name}")
+                logging.info(f"Found existing Google Drive folder: {folder_name}")
             else:
                 folder_metadata = {'title': folder_name, 'mimeType': 'application/vnd.google-apps.folder'}
                 folder = drive.CreateFile(folder_metadata)
                 folder.Upload()
                 folder_id = folder['id']
-                logging.info(f"Created new folder in Google Drive: {folder_name}")
+                logging.info(f"Created new Google Drive folder: {folder_name}")
 
-            # Upload model file
-            file_metadata = {'title': os.path.basename(local_file_path), 'parents': [{'id': folder_id}]}
-            file = drive.CreateFile(file_metadata)
+            # Upload file
+            file = drive.CreateFile({'title': os.path.basename(local_file_path), 'parents': [{'id': folder_id}]})
             file.SetContentFile(local_file_path)
             file.Upload()
 
-            file_url = f"https://drive.google.com/uc?id={file['id']}"
-            logging.info(f"Model uploaded successfully to Google Drive: {file_url}")
+            # Set file permissions to public (anyone with link can view)
+            file.InsertPermission({
+                'type': 'anyone',
+                'value': 'anyone',
+                'role': 'reader'
+            })
 
-            return file_url
+            shareable_link = f"https://drive.google.com/uc?id={file['id']}"
+            logging.info(f"✅ Model uploaded successfully to Google Drive: {shareable_link}")
+
+            return shareable_link
 
         except Exception as e:
             raise USvisaException(e, sys)
 
-    # ------------------------------------------------------------------
-    # INITIATE MODEL PUSHER
-    # ------------------------------------------------------------------
     def initiate_model_pusher(self) -> ModelPusherArtifact:
         """
-        Uploads the trained model to Google Drive if it was accepted in evaluation.
+        Initiates the model pushing process to Google Drive.
         """
         try:
             logging.info("Initiating Model Pusher...")
 
             if not self.model_evaluation_artifact.is_model_accepted:
-                logging.info("Model rejected. Skipping Google Drive upload.")
+                logging.info("Model was not accepted; skipping upload to Google Drive.")
                 return ModelPusherArtifact(
                     pushed_model_google_drive_url="",
-                    message="Model was not accepted; upload skipped."
+                    message="Model not accepted, skipping upload."
                 )
 
             model_path = self.model_evaluation_artifact.trained_model_path
-            drive_url = self.upload_to_drive(local_file_path=model_path, folder_name="US_Visa_Models")
+            drive_url = self.upload_to_drive(model_path)
 
             return ModelPusherArtifact(
                 pushed_model_google_drive_url=drive_url,
-                message="Model uploaded successfully to Google Drive."
+                message="Model uploaded to Google Drive successfully (public link generated)."
             )
 
         except Exception as e:
