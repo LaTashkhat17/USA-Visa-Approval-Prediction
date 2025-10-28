@@ -206,3 +206,19 @@ marimo/_static/
 marimo/_lsp/
 __marimo__/
 "client_secrets.json" 
+
+
+# Google OAuth credentials
+client_secrets.json
+credentials.json
+
+# Python cache & environment
+__pycache__/
+*.pyc
+.env
+*.pkl
+
+# Local model / artifact files
+artifacts/
+saved_models/
+logs/
