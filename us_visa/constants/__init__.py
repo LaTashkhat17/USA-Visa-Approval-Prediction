@@ -88,3 +88,10 @@ MODEL_PUSHER_GOOGLE_DRIVE_FOLDER_NAME = "US_Visa_Models"  # Folder name in Googl
 GOOGLE_CLIENT_SECRET_FILE = "client_secrets.json"
 GOOGLE_CREDENTIALS_FILE = "credentials.json"
 GOOGLE_DRIVE_FOLDER_NAME = "us_visa_models"
+
+# 🔗 Direct public link for latest model
+#GOOGLE_DRIVE_MODEL_PATH = "https://drive.google.com/uc?id=1whgyo74JBdV6iLe8ohV7syTFC-zLv1DD"
+GOOGLE_DRIVE_MODEL_PATH = "https://drive.google.com/file/d/1whgyo74JBdV6iLe8ohV7syTFC-zLv1DD/view?usp=sharing"
+
+APP_HOST: str ="0.0.0.0"
+APP_PORT: int = 8080
