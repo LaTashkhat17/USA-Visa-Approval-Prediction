@@ -1,0 +1,23 @@
+[33mcommit e41f86b5279cf4b4bbca89a4bf4f4c3fc52f6ac1[m
+Author: thy456546 <omarrashid852@gmail.com>
+Date:   Tue Oct 28 14:03:29 2025 +0600
+
+    Prediction Pipeline Added
+
+[33mcommit 797faa56c736774b706ef443410a4bc9bab48e47[m
+Author: thy456546 <omarrashid852@gmail.com>
+Date:   Tue Oct 28 13:39:42 2025 +0600
+
+    Prediction Pipeline Added.
+
+[33mcommit 597e7fe2fc23b17ff5506e94adffcb55ab67295e[m
+Author: thy456546 <omarrashid852@gmail.com>
+Date:   Tue Oct 28 13:33:06 2025 +0600
+
+    Remove sensitive client_secrets.json and add to .gitignore
+
+[33mcommit f0d4d54f6ac9235ed3d2ab12ee6dde0e37867d1e[m
+Author: thy456546 <omarrashid852@gmail.com>
+Date:   Tue Oct 28 00:53:16 2025 +0600
+
+    model evaluation & model pusher added.
