@@ -222,3 +222,4 @@ __pycache__/
 artifacts/
 saved_models/
 logs/
+client_secrets.json 
